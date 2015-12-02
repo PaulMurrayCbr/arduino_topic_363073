@@ -78,11 +78,12 @@ void loop() {
         // ok. do we actually need to change the pixel colour?
         int mostRecentBrightness = 255 * brightness;
         if(mostRecentBrightness != pixel[i].mostRecentBrightness) {
+          // yes we do
           pixel[i].mostRecentBrightness = mostRecentBrightness;
           setPixelColor(i,
-             COLOURS[pixel[i].selectedColour][0],
-             COLOURS[pixel[i].selectedColour][1],
-             COLOURS[pixel[i].selectedColour][2]
+             (int)(COLOURS[pixel[i].selectedColour][0] * brightness),
+             (int)(COLOURS[pixel[i].selectedColour][1] * brightness),
+             (int)(COLOURS[pixel[i].selectedColour][2] * brightness)
           );
         }
       }
