@@ -51,7 +51,50 @@ void setup() {
   }
 }
 
+// this is a dummy function. I put it here just to check that the code compiles.
+// Replace calls to this function with your
+// strip.setPixelColor function
+void setPixelColor(int strip, int r, int g, int b) {
+}
+
 void loop() {
   for(int i = 0; i< NPIXELS; i++) {
+    if(pixel[i].on) {
+      // pixel is on
+      
+      if(millis() - pixel[i].timeMarkMs >= FADE_TIME_MS) {
+        // time to turn the pixel off
+        setPixelColor(i,0,0,0);
+        pixel[i].timeMarkMs = millis();
+        pixel[i].offTimeMs = random(MIN_OFF_TIME_MS, MAX_OFF_TIME_MS);
+        pixel[i].mostRecentBrightness = 0;
+        pixel[i].on = false;
+      }
+      else {
+        // calculate the new brightness as flaoting point
+        // this is the bit that you change if you want the fade pattern to change
+        float brightness = 1 - (millis() - pixel[i].timeMarkMs)/((float)FADE_TIME_MS);
+        
+        // ok. do we actually need to change the pixel colour?
+        int mostRecentBrightness = 255 * brightness;
+        if(mostRecentBrightness != pixel[i].mostRecentBrightness) {
+          pixel[i].mostRecentBrightness = mostRecentBrightness;
+          setPixelColor(i,
+             COLOURS[pixel[i].selectedColour][0],
+             COLOURS[pixel[i].selectedColour][1],
+             COLOURS[pixel[i].selectedColour][2]
+          );
+        }
+      }
+    }
+    else {
+      // pixel is off. do we need to turn it on?
+      
+      if(millis()-pixel[i].timeMarkMs > pixel[i].offTimeMs) {
+        pixel[i].on = true;
+        pixel[i].mostRecentBrightness = 0; // this will force an update next loop
+        pixel[i].selectedColour = random(NCOLOURS);
+      }
+    }
   }
 }
